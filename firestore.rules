@@ -1,0 +1,177 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/Users/$(request.auth.uid))
+        && (
+          get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('role', 'user') == 'admin'
+          || get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('isAdmin', false) == true
+          || get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('isAdmin', 'false') == 'true'
+        );
+    }
+
+    function owns(data) {
+      return signedIn() && (
+        data.get('userId', '') == request.auth.uid
+        || data.get('uid', '') == request.auth.uid
+        || data.get('userEmail', '') == request.auth.token.email
+      );
+    }
+
+    // ---------------- Users ----------------
+    match /Users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.get('role', 'user') == 'user'
+        && request.resource.data.get('isAdmin', false) == false;
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAdmin() || (
+        signedIn() && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid','role','isAdmin'])
+      );
+      allow delete: if isAdmin();
+      match /Wishlist/{movieId} {
+        allow read, write: if signedIn() && request.auth.uid == userId;
+      }
+    }
+
+    match /users/{userId} {
+      allow create, read, update: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ---------------- Public catalogue / admin management ----------------
+    match /Movies/{movieId} { allow read: if true; allow write: if isAdmin(); }
+    match /movies/{movieId} { allow read: if true; allow write: if isAdmin(); }
+    match /theatres/{theatreId} { allow read: if true; allow write: if isAdmin(); }
+    match /Theatres/{theatreId} { allow read: if true; allow write: if isAdmin(); }
+    match /cinemas/{cinemaId} { allow read: if true; allow write: if isAdmin(); }
+    match /shows/{showId} { allow read: if true; allow write: if isAdmin(); }
+    match /Shows/{showId} { allow read: if true; allow write: if isAdmin(); }
+    match /showtimes/{showtimeId} { allow read: if true; allow write: if isAdmin(); }
+    match /Showtimes/{showtimeId} { allow read: if true; allow write: if isAdmin(); }
+    match /screenings/{screeningId} { allow read: if true; allow write: if isAdmin(); }
+
+    // ---------------- Shared seat locks ----------------
+    // Canonical lifecycle: locked -> booked -> cancelled -> locked.
+    match /seatLocks/{lockId} {
+      allow read: if signedIn();
+
+      // Normal users may create only their own temporary lock.
+      // Admin may create any lock when repairing/managing data.
+      allow create: if isAdmin() || (
+        signedIn()
+        && request.resource.data.get('userId', '') == request.auth.uid
+        && request.resource.data.get('status', '') == 'locked'
+      );
+
+      allow update: if isAdmin() || (
+        signedIn()
+        && (
+          // Own temporary lock -> booked during successful payment.
+          (
+            resource.data.get('userId', '') == request.auth.uid
+            && resource.data.get('status', '') == 'locked'
+            && request.resource.data.get('status', '') == 'booked'
+            && request.resource.data.get('userId', '') == request.auth.uid
+          )
+          ||
+          // Own temporary lock refresh.
+          (
+            resource.data.get('userId', '') == request.auth.uid
+            && resource.data.get('status', '') == 'locked'
+            && request.resource.data.get('status', '') == 'locked'
+            && request.resource.data.get('userId', '') == request.auth.uid
+          )
+          ||
+          // Own booked seat -> cancelled.
+          (
+            resource.data.get('userId', '') == request.auth.uid
+            && resource.data.get('status', '') == 'booked'
+            && request.resource.data.get('status', '') == 'cancelled'
+            && request.resource.data.get('userId', '') == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','cancelledAt','cancellationReason'])
+          )
+          ||
+          // A cancelled seat is reusable by a new user.
+          (
+            resource.data.get('status', '') == 'cancelled'
+            && request.resource.data.get('status', '') == 'locked'
+            && request.resource.data.get('userId', '') == request.auth.uid
+          )
+        )
+      );
+
+      // Users may abandon only temporary locks. Cancellation uses update,
+      // so a booked seat cannot be silently deleted by the client.
+      allow delete: if isAdmin() || (
+        signedIn()
+        && resource.data.get('userId', '') == request.auth.uid
+        && resource.data.get('status', '') == 'locked'
+      );
+    }
+
+    // ---------------- Unified Web + Android bookings ----------------
+    match /bookingticket_app_web/{bookingId} {
+      allow read: if isAdmin() || owns(resource.data);
+
+      allow create: if signedIn()
+        && (
+          request.resource.data.get('userId', '') == request.auth.uid
+          || request.resource.data.get('uid', '') == request.auth.uid
+          || request.resource.data.get('userEmail', '') == request.auth.token.email
+        );
+
+      // Admin manages all bookings. Users may only cancel their own ticket,
+      // and cannot alter ownership, seats, amount, show, or payment fields.
+      allow update: if isAdmin() || (
+        owns(resource.data)
+        && request.resource.data.get('status', '') == 'CANCELLED'
+        && resource.data.get('status', '') != 'CANCELLED'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','cancelledAt','cancellationReason'])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------------- Legacy compatibility ----------------
+    match /Bookings/{bookingId} {
+      allow read: if isAdmin() || owns(resource.data);
+      allow create: if signedIn() && owns(request.resource.data);
+      allow update: if isAdmin() || (
+        owns(resource.data)
+        && request.resource.data.get('status', '') == 'CANCELLED'
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() || owns(resource.data);
+      allow create: if signedIn() && owns(request.resource.data);
+      allow update: if isAdmin() || (
+        owns(resource.data)
+        && request.resource.data.get('status', '') == 'CANCELLED'
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ---------------- Payments ----------------
+    match /Payments/{paymentId} {
+      allow read: if isAdmin() || owns(resource.data);
+      allow create: if isAdmin() || owns(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+    match /payments/{paymentId} {
+      allow read: if isAdmin() || owns(resource.data);
+      allow create: if isAdmin() || owns(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

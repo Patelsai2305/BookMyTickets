@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "328788774788",
+    "project_id": "book-my-ticket-35ee6",
+    "storage_bucket": "book-my-ticket-35ee6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328788774788:android:b00bfa0267c58463d397d1",
+        "android_client_info": {
+          "package_name": "com.example.bookmyticket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6rBujIxYxb_1W2UacEVTa18EQ1sX9x3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
