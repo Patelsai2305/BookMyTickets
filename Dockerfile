@@ -1,16 +1,21 @@
 FROM php:8.2-apache
 
-# Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Set working directory
+RUN docker-php-ext-install curl
+
 WORKDIR /var/www/html
 
-# Copy project files
 COPY . /var/www/html/
 
-# Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Apache listens on port 80
-EXPOSE 80
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+EXPOSE 10000
+
+ENTRYPOINT ["docker-entrypoint.sh"]
