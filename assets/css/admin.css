@@ -12,11 +12,17 @@
     --admin-muted: #94a3b8;
     --admin-accent: #e50914;
     --admin-accent-hover: #b90710;
+<<<<<<< HEAD
     --admin-success: #22c55e;
     --admin-warning: #facc15;
     --admin-danger: #ef4444;
     --admin-cyan: #22d3ee;
     --admin-purple: #a78bfa;
+=======
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-danger: #ef4444;
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 }
 
 * {
@@ -156,6 +162,7 @@ aside.admin-sidebar {
 }
 
 /* ============================ Dashboard Cards ============================ */
+<<<<<<< HEAD
 .finance-hero {
     margin-bottom: 1.35rem;
     padding: 0.2rem 0 0.4rem;
@@ -314,6 +321,65 @@ aside.admin-sidebar {
         min-height: 120px;
     }
 }
+=======
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    background: var(--admin-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--admin-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.stat-card.accent  { border-left: 4px solid var(--admin-accent); }
+.stat-card.success { border-left: 4px solid var(--admin-success); }
+.stat-card.warning { border-left: 4px solid var(--admin-warning); }
+
+.stat-info p {
+    font-size: 0.82rem;
+    color: var(--admin-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+.stat-info h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-top: 0.4rem;
+    letter-spacing: -0.5px;
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.icon-accent  { background: rgba(229, 9, 20, 0.15); color: var(--admin-accent); }
+.icon-success { background: rgba(16, 185, 129, 0.15); color: var(--admin-success); }
+.icon-warning { background: rgba(245, 158, 11, 0.15); color: var(--admin-warning); }
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
 .section-heading {
     font-size: 1.35rem;
@@ -326,6 +392,7 @@ aside.admin-sidebar {
 
 .section-heading i { color: var(--admin-accent); }
 
+<<<<<<< HEAD
 .metric-page {
     display: flex;
     flex-direction: column;
@@ -824,6 +891,8 @@ aside.admin-sidebar {
     color: var(--admin-text);
 }
 
+=======
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 /* ============================ Tables ============================ */
 .data-table-container {
     background: var(--admin-card);

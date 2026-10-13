@@ -1,11 +1,15 @@
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/';
+<<<<<<< HEAD
 const LOCAL_IMAGE_PATH_HINTS = ['/uploads/', '/images/', '/assets/', '/storage/', '/img/', '/files/', '/posters/', '/poster/', '/media/'];
+=======
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
 export function getHybridImageUrl(value, size = 'w500', fallback = '') {
     const image = String(value || '').trim();
     if (!image) return fallback;
     if (/^(https?:\/|data:image\/|blob:)/i.test(image)) return image;
 
+<<<<<<< HEAD
     const normalizedImage = image.replace(/\s+/g, '');
     const isLikelyBase64Payload = /^\/?[A-Za-z0-9+/]+={0,2}$/.test(normalizedImage)
         && normalizedImage.length > 80
@@ -30,6 +34,11 @@ export function getHybridImageUrl(value, size = 'w500', fallback = '') {
 
     if (!image.startsWith('/') && !image.startsWith('data:') && !image.startsWith('blob:') && /[\\/]/.test(image)) {
         return image;
+=======
+    // TMDB paths are short; Android's raw Base64 payloads are much longer.
+    if (image.startsWith('/') && image.length < 100) {
+        return `${TMDB_IMAGE_BASE}${size}${image}`;
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
     }
 
     const base64 = image.startsWith('/') ? image.slice(1) : image;

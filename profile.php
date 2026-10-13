@@ -83,6 +83,7 @@
             const getImageUrl = path => getHybridImageUrl(path, 'w200', 'assets/img/no-poster.png');
             bookings.forEach((booking) => {
                 const seats = Array.isArray(booking.seats) ? booking.seats.join(', ') : (booking.seats || 'N/A');
+<<<<<<< HEAD
                 const rawStatus = String(booking.status || booking.paymentStatus || 'CONFIRMED').toUpperCase().trim();
                 const showTimePassed = (() => {
                     const date = booking.date || booking.showDate || '';
@@ -95,6 +96,9 @@
                     : rawStatus.includes('COMPLETED') || rawStatus.includes('SUCCESS') || rawStatus.includes('PAID') || rawStatus.includes('CONFIRM') || rawStatus.includes('BOOKED') || rawStatus.includes('APPROVED')
                         ? (showTimePassed ? 'COMPLETED' : 'CONFIRMED')
                         : (showTimePassed ? 'COMPLETED' : 'CONFIRMED');
+=======
+                const status = String(booking.status || 'CONFIRMED').toUpperCase();
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                 const badge = status === 'CANCELLED' ? 'bg-secondary' : status === 'COMPLETED' ? 'bg-dark' : 'bg-success';
                 const card = document.createElement('div');
                 card.className = 'col-md-6 col-lg-4';

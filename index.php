@@ -12,7 +12,11 @@ if ($searchQuery) {
     $nowPlaying = $tmdb->getMoviesByGenre($genreId);
     $upcoming = ['results' => []];
 } else {
+<<<<<<< HEAD
     $nowPlaying = $tmdb->getNowStreaming();
+=======
+    $nowPlaying = $tmdb->getNowPlaying();
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
     $upcoming = $tmdb->getUpcoming();
 }
 
@@ -115,6 +119,7 @@ include 'includes/header.php';
         <div class="movie-grid" id="firestore-movies-grid"></div>
     </section>
 
+<<<<<<< HEAD
     <section class="movies-section" id="firestore-upcoming-section" style="display: none;">
         <div class="section-title"><h2>Upcoming Movies <span style="font-size:0.75rem; color:var(--text-muted);">• Live from App</span></h2></div>
         <div class="movie-grid" id="firestore-upcoming-grid"></div>
@@ -124,6 +129,12 @@ include 'includes/header.php';
     <section class="movies-section">
         <div class="section-title">
             <h2><?= $searchQuery ? 'Search Results' : ($genreId ? 'Filtered Movies' : 'Now Streaming') ?></h2>
+=======
+    <!-- Now Showing Section (TMDB) -->
+    <section class="movies-section">
+        <div class="section-title">
+            <h2><?= $searchQuery ? 'Search Results' : ($genreId ? 'Filtered Movies' : 'Now Showing') ?></h2>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
         </div>
 
         <?php if (empty($nowPlaying['results'])): ?>
@@ -151,11 +162,19 @@ include 'includes/header.php';
         <?php endif; ?>
     </section>
 
+<<<<<<< HEAD
     <!-- Upcoming Movies Section -->
     <?php if (!$searchQuery && !$genreId && !empty($upcoming['results'])): ?>
         <section class="movies-section">
             <div class="section-title">
                 <h2>Upcoming Movies</h2>
+=======
+    <!-- Upcoming Releases Section -->
+    <?php if (!$searchQuery && !$genreId && !empty($upcoming['results'])): ?>
+        <section class="movies-section">
+            <div class="section-title">
+                <h2>Upcoming Releases</h2>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
             </div>
             <div class="movie-grid">
                 <?php foreach (array_slice($upcoming['results'], 0, 6) as $movie): ?>
@@ -187,9 +206,13 @@ include 'includes/header.php';
     // Each collection is loaded independently so one failed/empty collection
     // cannot prevent the other collection from appearing.
     const grid = document.getElementById('firestore-movies-grid');
+<<<<<<< HEAD
     const upcomingGrid = document.getElementById('firestore-upcoming-grid');
     const section = document.getElementById('firestore-movies-section');
     const upcomingSection = document.getElementById('firestore-upcoming-section');
+=======
+    const section = document.getElementById('firestore-movies-section');
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
     const getImageUrl = path => getHybridImageUrl(path, 'w500', 'assets/img/no-poster.png');
 
     const moviesById = new Map();
@@ -200,6 +223,7 @@ include 'includes/header.php';
         return String(movie.tmdbId || movie.id || movie.movieId || docId || movie.title || movie.name || '').trim();
     }
 
+<<<<<<< HEAD
     function buildMovieCard(movie) {
         const title = movie.title || movie.name || 'Untitled Movie';
         const poster = movie.poster || movie.posterUrl || movie.posterPath || movie.poster_path || movie.banner || movie.bannerUrl || movie.banner_url || movie.image || movie.imageUrl || movie.moviePoster || '';
@@ -258,6 +282,60 @@ include 'includes/header.php';
         upcomingSection.style.display = upcomingMovies.length ? 'block' : 'none';
         upcomingGrid.innerHTML = '';
         upcomingMovies.forEach(m => upcomingGrid.appendChild(buildMovieCard(m)));
+=======
+    function renderMovies() {
+        const movies = [...moviesById.values()]
+            .filter(m => !isUpcomingMovie(m))
+            .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+
+        if (!movies.length) {
+            // Keep the section hidden when there really are no Firestore movies.
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        grid.innerHTML = '';
+
+        movies.forEach(m => {
+            const title = m.title || m.name || 'Untitled Movie';
+            const poster = m.poster || m.posterPath || m.poster_path || '';
+            const id = movieKey(m, '');
+
+            const card = document.createElement('a');
+            card.href = `movie_details.php?id=${encodeURIComponent(id)}`;
+            card.className = 'movie-card';
+
+            const posterWrapper = document.createElement('div');
+            posterWrapper.className = 'poster-wrapper';
+            const img = document.createElement('img');
+            img.src = getImageUrl(poster);
+            img.alt = title;
+            img.loading = 'lazy';
+            img.onerror = () => {
+                img.onerror = null;
+                img.src = 'assets/img/no-poster.png';
+            };
+            posterWrapper.appendChild(img);
+
+            const info = document.createElement('div');
+            info.className = 'movie-info';
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'movie-title';
+            titleDiv.textContent = title;
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'movie-meta';
+            const metaSpan = document.createElement('span');
+            metaSpan.textContent = 'App Listing';
+            metaDiv.appendChild(metaSpan);
+            info.appendChild(titleDiv);
+            info.appendChild(metaDiv);
+
+            card.appendChild(posterWrapper);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
     }
 
     function mergeSnapshot(collectionName, snap) {

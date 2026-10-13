@@ -17,10 +17,15 @@
         <nav>
             <ul class="admin-nav">
                 <li><a href="index.php"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+<<<<<<< HEAD
                 <li><a href="movies.php"><i class="fa-solid fa-film"></i> Movies</a></li>
                 <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
                 <li><a href="showtimes.php"><i class="fa-solid fa-film"></i> Showtimes</a></li>
                 <li><a href="theatres.php"><i class="fa-solid fa-location-dot"></i> Theatres</a></li>
+=======
+                <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
+                <li><a href="showtimes.php"><i class="fa-solid fa-film"></i> Showtimes</a></li>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                 <li><a href="users.php" class="active"><i class="fa-solid fa-users"></i> Users</a></li>
                 <li><a href="../index.php"><i class="fa-solid fa-house"></i> View Website</a></li>
             </ul>
@@ -70,9 +75,13 @@
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = '../login.php?redirect=' + encodeURIComponent(window.location.href); return; }
             const userDoc = await getDoc(doc(db, "Users", user.uid));
+<<<<<<< HEAD
             const currentUserData = userDoc.exists() ? userDoc.data() : {};
             const isCurrentAdmin = currentUserData.role === 'admin' || currentUserData.isAdmin === true || currentUserData.isAdmin === 'true';
             if (!userDoc.exists() || !isCurrentAdmin) {
+=======
+            if (!userDoc.exists() || (userDoc.data().role !== 'admin' && userDoc.data().isAdmin !== true)) {
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                 window.location.href = '../index.php';
                 return;
             }
@@ -99,7 +108,11 @@
             tbody.innerHTML = '';
             users.forEach(u => {
                 const joined = u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString() : '—';
+<<<<<<< HEAD
                 const isAdmin = u.role === 'admin' || u.isAdmin === true || u.isAdmin === 'true';
+=======
+                const isAdmin = u.role === 'admin' || u.isAdmin === true;
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                 const tr = document.createElement('tr');
 
                 const tdName = document.createElement('td');
@@ -150,6 +163,7 @@
                     if (!confirm(`Change this user's role to "${newRole}"?`)) return;
                     btn.disabled = true;
                     try {
+<<<<<<< HEAD
                         await updateDoc(doc(db, "Users", id), {
                             role: newRole,
                             isAdmin: newRole === 'admin'
@@ -159,6 +173,11 @@
                             u.role = newRole;
                             u.isAdmin = newRole === 'admin';
                         }
+=======
+                        await updateDoc(doc(db, "Users", id), { role: newRole });
+                        const u = allUsers.find(x => x.id === id);
+                        if (u) u.role = newRole;
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                         renderUsers(allUsers);
                     } catch (err) {
                         alert('Failed to update role: ' + err.message);

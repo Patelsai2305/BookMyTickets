@@ -8,12 +8,19 @@ if (!isset($_GET['id'])) {
 }
 
 $movieId = $_GET['id'];
+<<<<<<< HEAD
 $movie = [];
 if ($movieId !== '' && is_numeric($movieId)) {
     $movie = $tmdb->getMovieDetails((int) $movieId);
 }
 
 $movieTitle = $_GET['title'] ?? ($movie['title'] ?? 'Movie Details');
+=======
+$movie = $tmdb->getMovieDetails($movieId);
+
+// Fallback values to prevent "Undefined array key" warnings
+$movieTitle = $movie['title'] ?? 'Unknown Movie';
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 $movieOverview = $movie['overview'] ?? 'No overview available.';
 $movieTagline = $movie['tagline'] ?? '';
 $movieRuntime = $movie['runtime'] ?? 0;
@@ -21,7 +28,10 @@ $movieReleaseDate = $movie['release_date'] ?? 'N/A';
 $movieVote = $movie['vote_average'] ?? 0;
 $moviePosterPath = $movie['poster_path'] ?? '';
 $movieBackdropPath = $movie['backdrop_path'] ?? '';
+<<<<<<< HEAD
 $isUpcomingMovie = !empty($movieReleaseDate) && $movieReleaseDate !== 'N/A' && strtotime($movieReleaseDate) > time();
+=======
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
 // Find YouTube trailer if available
 $trailerKey = null;
@@ -100,9 +110,15 @@ include 'includes/header.php';
     }
 </style>
 
+<<<<<<< HEAD
 <div class="backdrop" id="movie-backdrop">
     <div class="hero-text" style="max-width: 700px;">
         <h1 id="movie-title" style="font-size: 3.2rem; line-height: 1.1; font-weight: 800;"><?= htmlspecialchars($movieTitle) ?></h1>
+=======
+<div class="backdrop">
+    <div class="hero-text" style="max-width: 700px;">
+        <h1 style="font-size: 3.2rem; line-height: 1.1; font-weight: 800;"><?= htmlspecialchars($movieTitle) ?></h1>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
         <?php if ($movieTagline): ?>
             <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;"><?= htmlspecialchars($movieTagline) ?></p>
         <?php endif; ?>
@@ -111,7 +127,11 @@ include 'includes/header.php';
 
 <div class="movie-detail-container">
     <div style="display: flex; flex-direction: column; gap: 1rem;">
+<<<<<<< HEAD
         <img id="movie-poster" src="<?= $tmdb->getImageUrl($moviePosterPath) ?>" class="poster-img" alt="<?= htmlspecialchars($movieTitle) ?>">
+=======
+        <img src="<?= $tmdb->getImageUrl($moviePosterPath) ?>" class="poster-img" alt="<?= htmlspecialchars($movieTitle) ?>">
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
         <!-- Wishlist Button -->
         <button id="wishlist-btn" class="btn btn-secondary" style="width: 100%;">
@@ -133,7 +153,11 @@ include 'includes/header.php';
         </div>
 
         <h2 style="margin-bottom: 0.5rem;">Synopsis</h2>
+<<<<<<< HEAD
         <p id="movie-overview" style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.8;"><?= htmlspecialchars($movieOverview) ?></p>
+=======
+        <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.8;"><?= htmlspecialchars($movieOverview) ?></p>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
         <h3 style="margin-bottom: 1rem;">Top Cast</h3>
         <div class="cast-scroll">
@@ -165,6 +189,7 @@ include 'includes/header.php';
         <span style="font-size: 1.25rem; font-weight: 700;"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> <?= number_format($movieVote, 1) ?>/10</span>
         <span style="margin-left: 2rem; color: var(--text-muted);"><?= $movieRuntime ?> mins • <?= $movieReleaseDate ?></span>
     </div>
+<<<<<<< HEAD
     <?php if ($isUpcomingMovie): ?>
         <button class="btn btn-secondary" type="button" disabled style="padding: 0.9rem 2.5rem; font-size: 1.05rem; opacity: 0.9;">
             <i class="fa-solid fa-clock"></i> Coming Soon
@@ -174,16 +199,25 @@ include 'includes/header.php';
             <i class="fa-solid fa-ticket"></i> Book Tickets
         </a>
     <?php endif; ?>
+=======
+    <a href="theatres.php?movie_id=<?= $movieId ?>&title=<?= urlencode($movieTitle) ?>&poster=<?= urlencode($moviePosterPath) ?>" class="btn btn-primary" style="padding: 0.9rem 2.5rem; font-size: 1.05rem;">
+        <i class="fa-solid fa-ticket"></i> Book Tickets
+    </a>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 </div>
 
 <script type="module">
     import { auth, db, doc, getDoc, setDoc, deleteDoc, onAuthStateChanged, serverTimestamp } from './assets/js/firebase-config.js';
+<<<<<<< HEAD
     import { getHybridImageUrl } from './assets/js/image-utils.js';
     import { normalizeMovie } from './assets/js/movie-model.js';
+=======
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
     const movieId = "<?= $movieId ?>";
     const movieTitle = <?= json_encode($movieTitle) ?>;
     const posterPath = <?= json_encode($moviePosterPath) ?>;
+<<<<<<< HEAD
     const movieBackdropPath = <?= json_encode($movieBackdropPath) ?>;
     const trailerKey = <?= json_encode($trailerKey) ?>;
     const isTmdbMovie = /^\d+$/.test(String(movieId || ''));
@@ -231,6 +265,9 @@ include 'includes/header.php';
             }
         })();
     }
+=======
+    const trailerKey = <?= json_encode($trailerKey) ?>;
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 
     // Wishlist Logic
     const wishlistBtn = document.getElementById('wishlist-btn');

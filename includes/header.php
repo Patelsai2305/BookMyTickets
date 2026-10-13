@@ -74,7 +74,11 @@
                             avatarImage.onload = () => { avatarImage.style.display = 'block'; avatarPlaceholder.style.display = 'none'; };
                             avatarImage.onerror = () => { avatarImage.removeAttribute('src'); avatarImage.style.display = 'none'; avatarPlaceholder.style.display = 'inline'; };
                         }
+<<<<<<< HEAD
                         if (userData.role === 'admin' || userData.isAdmin === true || userData.isAdmin === 'true') {
+=======
+                        if (userData.role === 'admin' || userData.isAdmin === true) {
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                             adminLink.style.display = 'block';
                         }
                     } else {

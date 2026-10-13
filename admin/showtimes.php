@@ -1,7 +1,11 @@
 <?php
 require_once '../config/tmdb.php';
 $tmdb = new TMDB();
+<<<<<<< HEAD
 $nowPlaying = $tmdb->getNowStreaming()['results'] ?? [];
+=======
+$nowPlaying = $tmdb->getNowPlaying()['results'] ?? [];
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
 $theatres = ['PVR Cinemas', 'INOX', 'Cinepolis', 'AMC Theatres', 'Regal Cinemas', 'Carnival Cinemas'];
 $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
 ?>
@@ -21,10 +25,15 @@ $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
         <nav>
             <ul class="admin-nav">
                 <li><a href="index.php"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+<<<<<<< HEAD
                 <li><a href="movies.php"><i class="fa-solid fa-film"></i> Movies</a></li>
                 <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
                 <li><a href="showtimes.php" class="active"><i class="fa-solid fa-film"></i> Showtimes</a></li>
                 <li><a href="theatres.php"><i class="fa-solid fa-location-dot"></i> Theatres</a></li>
+=======
+                <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
+                <li><a href="showtimes.php" class="active"><i class="fa-solid fa-film"></i> Showtimes</a></li>
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
                 <li><a href="users.php"><i class="fa-solid fa-users"></i> Users</a></li>
                 <li><a href="../index.php"><i class="fa-solid fa-house"></i> View Website</a></li>
             </ul>
@@ -122,6 +131,7 @@ $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = '../login.php?redirect=' + encodeURIComponent(window.location.href); return; }
             const userDoc = await getDoc(doc(db, "Users", user.uid));
+<<<<<<< HEAD
             const userData = userDoc.exists() ? userDoc.data() : {};
             const isAdmin = userData.role === 'admin' || userData.isAdmin === true || userData.isAdmin === 'true';
             if (!userDoc.exists() || !isAdmin) {
@@ -162,6 +172,15 @@ $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
             });
         }
 
+=======
+            if (!userDoc.exists() || (userDoc.data().role !== 'admin' && userDoc.data().isAdmin !== true)) {
+                window.location.href = '../index.php';
+                return;
+            }
+            loadShowtimes();
+        });
+
+>>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
         // ---- Add showtime ----
         document.getElementById('showtime-form').onsubmit = async (e) => {
             e.preventDefault();
