@@ -233,16 +233,35 @@ const movieId = "<?= $movieId ?>";
     let currentUser = null;
     let isWishlisted = false;
 
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if (user) {
-            const wishRef = doc(db, `wishlist/${user.uid}/movies/${movieId}`);
-            const wishDoc = await getDoc(wishRef);
-            if (wishDoc.exists()) {
-                isWishlisted = true;
-                updateWishlistUI();
-            }
+    function getWishlistDocPath(uid, legacy = false) {
+        if (legacy) {
+            return doc(db, 'wishlist', uid, 'movies', String(movieId));
         }
+        return doc(db, 'Users', uid, 'Wishlist', String(movieId));
+    }
+
+    async function syncWishlistState(user) {
+        if (!user) {
+            isWishlisted = false;
+            updateWishlistUI();
+            return;
+        }
+
+        const primaryDoc = await getDoc(getWishlistDocPath(user.uid));
+        if (primaryDoc.exists()) {
+            isWishlisted = true;
+            updateWishlistUI();
+            return;
+        }
+
+        const legacyDoc = await getDoc(getWishlistDocPath(user.uid, true));
+        isWishlisted = legacyDoc.exists();
+        updateWishlistUI();
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        syncWishlistState(user);
     });
 
     wishlistBtn.onclick = async () => {
@@ -252,23 +271,37 @@ const movieId = "<?= $movieId ?>";
             return;
         }
 
-        const wishRef = doc(db, `wishlist/${currentUser.uid}/movies/${movieId}`);
         try {
+            const payload = {
+                id: String(movieId),
+                movieId: String(movieId),
+                tmdbId: isTmdbMovie ? Number(movieId) || 0 : 0,
+                title: movieTitle,
+                name: movieTitle,
+                posterUrl: posterPath || '',
+                posterPath: posterPath || '',
+                bannerUrl: movieBackdropPath || '',
+                description: document.getElementById('movie-overview')?.textContent || movieTitle,
+                rating: Number(document.querySelector('.booking-bar span')?.textContent?.match(/([0-9]+\.?[0-9]*)\s*\/\s*10/)?.[1] || 0),
+                releaseDate: document.querySelector('.booking-bar span:last-of-type')?.textContent?.trim() || '',
+                addedAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+
             if (isWishlisted) {
-                await deleteDoc(wishRef);
+                await deleteDoc(getWishlistDocPath(currentUser.uid));
+                await deleteDoc(getWishlistDocPath(currentUser.uid, true));
                 isWishlisted = false;
             } else {
-                await setDoc(wishRef, {
-                    movieId: movieId,
-                    title: movieTitle,
-                    posterPath: posterPath,
-                    addedAt: serverTimestamp()
-                });
+                await setDoc(getWishlistDocPath(currentUser.uid), payload);
+                await setDoc(getWishlistDocPath(currentUser.uid, true), payload);
                 isWishlisted = true;
             }
+
             updateWishlistUI();
         } catch (err) {
             console.error("Wishlist error:", err);
+            alert("Could not update your wishlist. Please try again.");
         }
     };
 
