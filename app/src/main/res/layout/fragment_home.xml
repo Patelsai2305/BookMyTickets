@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_search"
+        app:queryHint="Search movies..."
+        app:iconifiedByDefault="false"
+        app:queryBackground="@android:color/transparent"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/homeContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/bannerViewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/bannerIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="12dp"
+                        android:background="@android:color/transparent"
+                        android:visibility="gone"
+                        app:tabBackground="@drawable/dot_selector"
+                        app:tabIndicatorHeight="0dp"
+                        app:tabMaxWidth="12dp"
+                        app:tabMinWidth="12dp"
+                        app:tabPaddingEnd="4dp"
+                        app:tabPaddingStart="4dp"
+                        app:tabRippleColor="@null" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvSectionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔥 Popular Movies"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:padding="16dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:nestedScrollingEnabled="false"/>
+
+                <TextView
+                    android:id="@+id/tvUpcomingTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎬 Upcoming Movies"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:padding="16dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvUpcoming"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:nestedScrollingEnabled="false"/>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/searchContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="12dp"
+                android:clipToPadding="false"/>
+
+            <TextView
+                android:id="@+id/tvTheatreTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏢 Nearby Theatres"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:padding="16dp"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTheatreSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="12dp"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="24dp"
+            android:text="No results found"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAlignment="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+</LinearLayout>

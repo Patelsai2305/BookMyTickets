@@ -1,0 +1,56 @@
+const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/';
+const LOCAL_IMAGE_PATH_HINTS = ['/uploads/', '/images/', '/assets/', '/storage/', '/img/', '/files/', '/posters/', '/poster/', '/media/'];
+
+export function getHybridImageUrl(value, size = 'w500', fallback = '') {
+    const image = String(value || '').trim();
+    if (!image) return fallback;
+    if (/^(https?:\/|data:image\/|blob:)/i.test(image)) return image;
+
+    const normalizedImage = image.replace(/\s+/g, '');
+    const isLikelyBase64Payload = /^\/?[A-Za-z0-9+/]+={0,2}$/.test(normalizedImage)
+        && normalizedImage.length > 80
+        && (normalizedImage.startsWith('/9j/') || normalizedImage.startsWith('9j/') || normalizedImage.includes('/9j/') || normalizedImage.includes('iVBOR') || normalizedImage.includes('R0lGOD'));
+
+    if (isLikelyBase64Payload) {
+        return `data:image/jpeg;base64,${normalizedImage.replace(/^\/+/, '')}`;
+    }
+
+    if (image.startsWith('/')) {
+        const lower = image.toLowerCase();
+        const isLikelyLocalAsset = LOCAL_IMAGE_PATH_HINTS.some(path => lower.includes(path));
+        if (isLikelyLocalAsset || (image.includes('.') && image.includes('/'))) {
+            return image;
+        }
+
+        // TMDB poster/backdrop paths are short and do not look like local app assets.
+        if (image.length < 100) {
+            return `${TMDB_IMAGE_BASE}${size}${image}`;
+        }
+    }
+
+    if (!image.startsWith('/') && !image.startsWith('data:') && !image.startsWith('blob:') && /[\\/]/.test(image)) {
+        return image;
+    }
+
+    const base64 = image.startsWith('/') ? image.slice(1) : image;
+    // Accept padded and unpadded Base64 payloads (Android may omit padding).
+    if (base64.length > 0 && /^[A-Za-z0-9+/]*={0,2}$/.test(base64) && base64.length % 4 !== 1) {
+        return `data:image/jpeg;base64,${base64}`;
+    }
+    return fallback;
+}
+
+export function setImageWithFallback(image, value, fallback) {
+    const fallbackElement = image.parentElement?.querySelector('[data-image-fallback]');
+    image.src = getHybridImageUrl(value, 'w200', '');
+    image.onerror = () => {
+        image.onerror = null;
+        image.removeAttribute('src');
+        image.style.display = 'none';
+        if (fallbackElement) fallbackElement.style.display = 'inline-flex';
+        if (fallback) fallback();
+    };
+    if (fallbackElement) {
+        fallbackElement.style.display = image.src ? 'none' : 'inline-flex';
+    }
+}

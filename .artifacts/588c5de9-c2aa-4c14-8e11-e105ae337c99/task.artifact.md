@@ -1,0 +1,4 @@
+- [x] Fix missing movies by reverting collection name to `Movies`
+- [x] Update `fragment_admin_stats.xml` `rowCount` to 3 for 5 cards
+- [x] Create restore point at `backups/backup_20260724_002713`
+- [ ] Verify movies appear on Home and Admin screens

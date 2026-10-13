@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_admin_stats"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Stats" />
+    <item
+        android:id="@+id/nav_admin_movies"
+        android:icon="@drawable/ic_movie"
+        android:title="Movies" />
+    <item
+        android:id="@+id/nav_admin_users"
+        android:icon="@drawable/ic_people"
+        android:title="Users" />
+    <item
+        android:id="@+id/nav_admin_bookings"
+        android:icon="@drawable/ic_ticket"
+        android:title="Bookings" />
+    <item
+        android:id="@+id/nav_admin_payments"
+        android:icon="@drawable/ic_payments"
+        android:title="Payments" />
+</menu>

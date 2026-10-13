@@ -1,0 +1,3 @@
+- [x] Deduplicate users in `AdminViewModel.kt`
+- [x] Update user count in `AdminStats`
+- [x] Verify build

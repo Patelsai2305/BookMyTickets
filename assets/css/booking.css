@@ -1,0 +1,128 @@
+/* Booking page — dark theme matching the Android app */
+:root {
+    --bg: #0B1118;
+    --surface: #0F172A;
+    --border: #1E293B;
+    --text: #E2E8F0;
+    --text-muted: #64748B;
+    --vip: #D4AF37;
+    --premium: #3B82F6;
+    --normal: #64748B;
+    --selected: #E50914;
+    --booked: #262E3B;
+    --booked-text: #475569;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding-bottom: 90px;
+}
+
+.booking-shell { max-width: 520px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+.booking-header h1 { font-size: 1.35rem; }
+.booking-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+
+/* Screen indicator */
+.screen-indicator { text-align: center; margin: 1.5rem 0; }
+.screen-indicator span {
+    font-size: 0.7rem; letter-spacing: 3px; color: var(--text-muted);
+}
+.screen-bar {
+    height: 10px; width: 70%; margin: 0 auto 0.5rem;
+    background: linear-gradient(180deg, rgba(226,232,240,0.55), transparent);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    box-shadow: 0 -4px 18px rgba(226,232,240,0.15);
+}
+
+/* Legend */
+.legend {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+    justify-content: center; margin: 1.25rem 0; font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.legend-item { display: flex; align-items: center; gap: 0.4rem; }
+.legend-item .dot {
+    width: 12px; height: 12px; border-radius: 4px; border: 2px solid;
+    display: inline-block;
+}
+.legend-vip .dot { border-color: var(--vip); }
+.legend-premium .dot { border-color: var(--premium); }
+.legend-normal .dot { border-color: var(--normal); }
+.legend-booked .dot { border-color: var(--booked); background: var(--booked); }
+
+/* Seat grid: 8 columns x 6 rows */
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 45px);
+    gap: 8px;
+    justify-content: center;
+    margin: 1rem auto;
+}
+
+.seat {
+    width: 45px; height: 45px;
+    border-radius: 8px;
+    border: 2px solid var(--normal);
+    background: transparent;
+    color: var(--text);
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.seat:hover:not(.booked):not(.selected) { transform: translateY(-2px); }
+
+.seat.vip { border-color: var(--vip); }
+.seat.premium { border-color: var(--premium); }
+.seat.normal { border-color: var(--normal); }
+
+.seat.selected {
+    background: var(--selected);
+    border-color: var(--selected);
+    color: #fff;
+}
+
+.seat.booked {
+    background: var(--booked);
+    border-color: var(--booked);
+    color: var(--booked-text);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Bottom summary bar */
+.summary-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    max-width: 520px; margin: 0 auto;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 0.9rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.summary-info { display: flex; flex-direction: column; }
+.summary-info span { font-size: 0.8rem; color: var(--text-muted); }
+.summary-info strong { font-size: 1.15rem; }
+
+.confirm-btn {
+    background: var(--selected);
+    border: none; color: #fff;
+    padding: 0.85rem 1.75rem;
+    border-radius: 10px;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.confirm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.sync-note { text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-top: 1rem; }
+
+@media (max-width: 480px) {
+    .seat-grid { grid-template-columns: repeat(8, minmax(34px, 45px)); gap: 6px; }
+    .seat { width: 100%; aspect-ratio: 1; }
+}

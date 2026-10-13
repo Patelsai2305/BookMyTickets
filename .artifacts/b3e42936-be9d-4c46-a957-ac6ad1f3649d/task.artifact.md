@@ -1,0 +1,5 @@
+- [x] Update Firestore security rules in `firestore.rules` to allow owner-based booking updates and wishlist access.
+- [x] Update `HomeActivity.kt` to include default role fields when saving user profile data.
+- [x] Improve error handling in `AdminViewModel.kt` to catch permission-related flow exceptions.
+- [x] Enhance error visibility in `TicketsFragment.kt` for background ticket status updates.
+- [x] Verify changes.

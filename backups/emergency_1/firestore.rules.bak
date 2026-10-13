@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/Users/$(request.auth.uid)) &&
+        (get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.role == 'admin' ||
+         get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.isAdmin == true);
+    }
+
+    match /Users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == 'user'
+        && request.resource.data.isAdmin == false;
+
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+
+      allow update: if isAdmin() || (signedIn()
+        && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'role']));
+
+      allow delete: if isAdmin();
+
+      // Subcollection for movies favorited by the user
+      match /Wishlist/{movieId} {
+        allow read, write: if signedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // Rules for Movies collection (Both Cased and Lowercase)
+    match /Movies/{movieId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /movies/{movieId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /Bookings/{bookingId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+
+      // Users can only read their own bookings. Admins can read all.
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Users can update their own booking status (e.g., Cancelled). Admins can update anything.
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']));
+
+      allow delete: if isAdmin();
+    }
+
+    match /showtimes/{showtimeId} {
+      allow read: if signedIn();
+      // FULL FIX: Regular signed-in users must be able to update 'bookedSeats'
+      // in the showtimes collection to complete a ticket booking.
+      allow write: if signedIn();
+    }
+
+    // Rules for Screenings (Shared with Web)
+    match /screenings/{screeningId} {
+      allow read: if true; // Public read for seat maps
+      allow create, update: if signedIn(); // Seat locking
+      allow delete: if isAdmin();
+    }
+
+    // Unified Collection for App & Web Bookings
+    match /bookingticket_app_web/{bookingId} {
+      allow read: if signedIn(); // Required for real-time seat aggregation query
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

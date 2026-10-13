@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#E50914</color>
+    <color name="primaryDark">#B20710</color>
+
+    <color name="background">#F8FAFC</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- In light mode, 'white' refers to the primary text color which should be dark -->
+    <color name="white">#0F172A</color>
+    <color name="white_alpha">#800F172A</color>
+
+    <color name="card_background">#FFFFFF</color>
+    <color name="gray">#64748B</color>
+
+    <color name="hint">#94A3B8</color>
+
+    <color name="success">#15803D</color>
+
+    <!-- Actual white for elements that should remain white in both modes -->
+    <color name="absolute_white">#FFFFFF</color>
+    <color name="absolute_black">#000000</color>
+
+    <!-- Seat Selection Colors -->
+    <color name="seat_vip_border">#7C5315</color>
+    <color name="seat_vip_fill">#2A1F10</color>
+    <color name="seat_premium_border">#1D4ED8</color>
+    <color name="seat_premium_fill">#172554</color>
+    <color name="seat_normal_border">#334155</color>
+    <color name="seat_normal_fill">#1E293B</color>
+    <color name="seat_booked">#262E3B</color>
+    <color name="seat_selected">#E50914</color>
+</resources>

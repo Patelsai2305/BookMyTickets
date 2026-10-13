@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        app:title="Select Theatre"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_back" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchTheatre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_search"
+        app:queryHint="Search nearby theatres..."
+        app:iconifiedByDefault="false"
+        app:queryBackground="@android:color/transparent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTheatres"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+</LinearLayout>

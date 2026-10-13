@@ -1,0 +1,7 @@
+- [x] Fix admin demotion in `HomeActivity.kt`
+- [x] Implement robust admin check in `User.kt` and `SplashActivity.kt`
+- [x] Implement multi-collection merge in `MovieRepository.kt`
+- [x] Implement multi-collection merge in `BookingRepository.kt`
+- [x] Implement multi-collection merge in `UserRepository.kt`
+- [x] Revert `stability` mapping to `status` in `Booking.kt`
+- [x] Verify build

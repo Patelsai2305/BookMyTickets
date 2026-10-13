@@ -1,0 +1,25 @@
+<resources>
+
+    <string name="app_name">Book My Ticket</string>
+
+    <string name="login">Login</string>
+
+    <string name="register">Register</string>
+
+    <string name="email">Email Address</string>
+
+    <string name="password">Password</string>
+
+    <string name="forgot_password">Forgot Password?</string>
+
+    <string name="dont_have_account">Don\'t have an account?</string>
+
+    <string name="welcome_back">Welcome Back 👋</string>
+    <string name="price_format">₹%1$d</string>
+    <string name="price_format_total">Total: ₹%1$d</string>
+    <string name="amount_paid_format">Amount Paid: ₹%1$d</string>
+    <string name="user_id_format">User ID: %1$s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
