@@ -44,13 +44,9 @@
             }
 
             const userDoc = await getDoc(doc(db, 'Users', cred.user.uid));
-<<<<<<< HEAD
             const userData = userDoc.exists() ? userDoc.data() : {};
             const isAdmin = userData.role === 'admin' || userData.isAdmin === true || userData.isAdmin === 'true';
-=======
-            const isAdmin = userDoc.exists() && (userDoc.data().role === 'admin' || userDoc.data().isAdmin === true);
->>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
-            if (isAdmin) {
+if (isAdmin) {
                 window.location.href = 'admin/index.php';
                 return;
             }
