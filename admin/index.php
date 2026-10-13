@@ -18,7 +18,7 @@
                 <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
                 <li><a href="showtimes.php"><i class="fa-solid fa-film"></i> Showtimes</a></li>
                 <li><a href="theatres.php"><i class="fa-solid fa-location-dot"></i> Theatres</a></li>
-<li><a href="users.php"><i class="fa-solid fa-users"></i> Users</a></li>
+                <li><a href="users.php"><i class="fa-solid fa-users"></i> Users</a></li>
                 <li><a href="../index.php"><i class="fa-solid fa-house"></i> View Website</a></li>
             </ul>
         </nav>
@@ -31,6 +31,7 @@
                 <p class="admin-subtitle">Real-time statistics overview</p>
             </div>
         </div>
+
         <div class="finance-hero">
             <div>
                 <div class="eyebrow">Revenue overview</div>
@@ -40,14 +41,14 @@
 
         <div class="stats-grid">
             <a href="gross-revenue.php" class="stat-card accent clickable" aria-label="Open Gross Revenue details">
-<div class="stat-info">
+                <div class="stat-info">
                     <p>Gross Revenue</p>
                     <h2 id="stat-revenue">₹...</h2>
                 </div>
                 <div class="stat-icon icon-accent"><i class="fa-solid fa-indian-rupee-sign"></i></div>
             </a>
             <a href="total-refunds.php" class="stat-card warning clickable" aria-label="Open Total Refunds details">
-<div class="stat-info">
+                <div class="stat-info">
                     <p>Total Refunds</p>
                     <h2 id="stat-refunds">₹...</h2>
                 </div>
@@ -61,20 +62,20 @@
                 <div class="stat-icon icon-success"><i class="fa-solid fa-chart-line"></i></div>
             </a>
             <a href="booking-details.php" class="stat-card cyan clickable" aria-label="Open Total Bookings details">
-<div class="stat-info">
+                <div class="stat-info">
                     <p>Total Bookings</p>
                     <h2 id="stat-bookings">...</h2>
                 </div>
                 <div class="stat-icon icon-cyan"><i class="fa-solid fa-circle-check"></i></div>
             </a>
             <a href="active-users.php" class="stat-card purple clickable" aria-label="Open Active Users details">
-<div class="stat-info">
+                <div class="stat-info">
                     <p>Active Users</p>
                     <h2 id="stat-users">...</h2>
                 </div>
                 <div class="stat-icon icon-purple"><i class="fa-solid fa-users"></i></div>
             </a>
-</div>
+        </div>
 
         <h2 class="section-heading"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h2>
         <div class="data-table-container">
@@ -100,6 +101,7 @@
 
     <script type="module">
         import { auth, db, collection, query, orderBy, limit, onSnapshot, onAuthStateChanged, doc, getDoc } from '../assets/js/firebase-config.js';
+
         let bookingsData = [];
         let usersData = [];
 
@@ -123,13 +125,14 @@
             }
             return showStartMillis(book) && Date.now() > showStartMillis(book) ? 'COMPLETED' : 'UPCOMING';
         }
-onAuthStateChanged(auth, async (user) => {
+
+        onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = '../login.php'; return; }
             const userDoc = await getDoc(doc(db, "Users", user.uid));
             const d = userDoc.data() || {};
             const isAdmin = d.role === 'admin' || d.isAdmin === true || d.isAdmin === 'true';
             if (!userDoc.exists() || !isAdmin) {
-window.location.href = '../index.php';
+                window.location.href = '../index.php';
                 return;
             }
             loadStats();
@@ -159,7 +162,7 @@ window.location.href = '../index.php';
                 document.getElementById('stat-net').innerText = money(grossRevenue - totalRefunds);
                 document.getElementById('stat-bookings').innerText = bookingsData.length;
                 document.getElementById('stat-users').innerText = usersData.length;
-};
+            };
             onSnapshot(collection(db, "bookingticket_app_web"), snap => { bookingsSnap = snap; renderStats(); });
             onSnapshot(collection(db, "Users"), snap => { usersSnap = snap; renderStats(); });
 
@@ -179,7 +182,7 @@ window.location.href = '../index.php';
                 recentSnap.forEach(doc => {
                     const b = doc.data();
                     const status = bookingStatus(b);
-const seats = (b.seats || b.selectedSeats || []).join(', ');
+                    const seats = (b.seats || b.selectedSeats || []).join(', ');
 
                     const tr = document.createElement('tr');
 
@@ -203,7 +206,7 @@ const seats = (b.seats || b.selectedSeats || []).join(', ');
                     const cancelled = status === 'CANCELLED';
                     badge.className = 'badge ' + (cancelled ? 'badge-warning' : 'badge-success');
                     badge.textContent = status === 'COMPLETED' ? 'Completed' : status === 'CANCELLED' ? 'Cancelled' : 'Upcoming';
-tdStatus.appendChild(badge);
+                    tdStatus.appendChild(badge);
 
                     tr.appendChild(tdUser);
                     tr.appendChild(tdMovie);

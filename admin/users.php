@@ -21,7 +21,7 @@
                 <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
                 <li><a href="showtimes.php"><i class="fa-solid fa-film"></i> Showtimes</a></li>
                 <li><a href="theatres.php"><i class="fa-solid fa-location-dot"></i> Theatres</a></li>
-<li><a href="users.php" class="active"><i class="fa-solid fa-users"></i> Users</a></li>
+                <li><a href="users.php" class="active"><i class="fa-solid fa-users"></i> Users</a></li>
                 <li><a href="../index.php"><i class="fa-solid fa-house"></i> View Website</a></li>
             </ul>
         </nav>
@@ -73,7 +73,7 @@
             const currentUserData = userDoc.exists() ? userDoc.data() : {};
             const isCurrentAdmin = currentUserData.role === 'admin' || currentUserData.isAdmin === true || currentUserData.isAdmin === 'true';
             if (!userDoc.exists() || !isCurrentAdmin) {
-window.location.href = '../index.php';
+                window.location.href = '../index.php';
                 return;
             }
             loadUsers();
@@ -100,7 +100,7 @@ window.location.href = '../index.php';
             users.forEach(u => {
                 const joined = u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString() : '—';
                 const isAdmin = u.role === 'admin' || u.isAdmin === true || u.isAdmin === 'true';
-const tr = document.createElement('tr');
+                const tr = document.createElement('tr');
 
                 const tdName = document.createElement('td');
                 const strong = document.createElement('strong');
@@ -159,7 +159,7 @@ const tr = document.createElement('tr');
                             u.role = newRole;
                             u.isAdmin = newRole === 'admin';
                         }
-renderUsers(allUsers);
+                        renderUsers(allUsers);
                     } catch (err) {
                         alert('Failed to update role: ' + err.message);
                         btn.disabled = false;

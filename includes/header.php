@@ -18,7 +18,6 @@
             <ul>
                 <li><a href="index.php" class="nav-link">Movies</a></li>
                 <li><a href="theatres.php" class="nav-link">Theatres</a></li>
-                <li id="wishlist-link" style="display:none;"><a href="wishlist.php" class="nav-link">Wishlist</a></li>
                 <li id="tickets-link" style="display:none;"><a href="tickets.php" class="nav-link">Tickets & History</a></li>
                 <li id="admin-link" style="display:none;"><a href="admin/index.php" class="nav-link" style="color: var(--accent);"><i class="fa-solid fa-user-shield"></i> Admin Panel</a></li>
             </ul>
@@ -60,7 +59,6 @@
 
                 authActions.style.display = 'none';
                 userActions.style.display = 'flex';
-                document.getElementById('wishlist-link').style.display = 'block';
                 document.getElementById('tickets-link').style.display = 'block';
 
                 try {
@@ -77,7 +75,7 @@
                             avatarImage.onerror = () => { avatarImage.removeAttribute('src'); avatarImage.style.display = 'none'; avatarPlaceholder.style.display = 'inline'; };
                         }
                         if (userData.role === 'admin' || userData.isAdmin === true || userData.isAdmin === 'true') {
-adminLink.style.display = 'block';
+                            adminLink.style.display = 'block';
                         }
                     } else {
                         userNameSpan.innerText = user.email.split('@')[0];
@@ -89,7 +87,6 @@ adminLink.style.display = 'block';
                 authActions.style.display = 'flex';
                 userActions.style.display = 'none';
                 adminLink.style.display = 'none';
-                document.getElementById('wishlist-link').style.display = 'none';
                 document.getElementById('tickets-link').style.display = 'none';
             }
         });

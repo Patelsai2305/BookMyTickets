@@ -1,9 +1,10 @@
 <?php
 class TMDB {
     private string $apiKey = '12711b61d7c6fd67d82d3624be601459';
-private string $baseUrl = 'https://api.themoviedb.org/3';
+    private string $baseUrl = 'https://api.themoviedb.org/3';
     private string $imageCdn = 'https://image.tmdb.org/t/p/w500';
     private string $backdropCdn = 'https://image.tmdb.org/t/p/original';
+
     public function getNowPlaying(): array {
         return $this->getNowStreaming();
     }
@@ -144,6 +145,6 @@ private string $baseUrl = 'https://api.themoviedb.org/3';
         }
 
         return ['results' => []];
-}
+    }
 }
 ?>

@@ -25,7 +25,7 @@ $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
                 <li><a href="bookings.php"><i class="fa-solid fa-ticket"></i> Bookings</a></li>
                 <li><a href="showtimes.php" class="active"><i class="fa-solid fa-film"></i> Showtimes</a></li>
                 <li><a href="theatres.php"><i class="fa-solid fa-location-dot"></i> Theatres</a></li>
-<li><a href="users.php"><i class="fa-solid fa-users"></i> Users</a></li>
+                <li><a href="users.php"><i class="fa-solid fa-users"></i> Users</a></li>
                 <li><a href="../index.php"><i class="fa-solid fa-house"></i> View Website</a></li>
             </ul>
         </nav>
@@ -161,7 +161,8 @@ $times = ['09:30 AM', '12:30 PM', '03:30 PM', '06:30 PM', '09:45 PM'];
                 theatreSelect.appendChild(option);
             });
         }
-// ---- Add showtime ----
+
+        // ---- Add showtime ----
         document.getElementById('showtime-form').onsubmit = async (e) => {
             e.preventDefault();
             const sel = document.getElementById('movie-select');

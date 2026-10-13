@@ -47,23 +47,38 @@ async function loadWishlist(user) {
     container.classList.add('d-none');
 
     try {
-        const primarySnap = await getDocs(collection(db, 'Users', user.uid, 'Wishlist'));
-        const legacySnap = await getDocs(collection(db, 'wishlist', user.uid, 'movies'));
+        const localKey = `bookmyticket_wishlist_${user.uid}`;
+        const localData = JSON.parse(localStorage.getItem(localKey) || '{}');
+        const localMovies = Object.keys(localData).filter((key) => localData[key] === true).map((id) => ({
+            id,
+            movieId: id,
+            title: id,
+            posterUrl: '',
+            addedAt: Date.now()
+        }));
 
-        const map = new Map();
+        let movies = [];
 
-        primarySnap.docs.forEach((docSnap) => {
-            map.set(String(docSnap.id), { id: docSnap.id, ...docSnap.data() });
-        });
+        try {
+            const primarySnap = await getDocs(collection(db, 'Users', user.uid, 'Wishlist'));
+            const legacySnap = await getDocs(collection(db, 'wishlist', user.uid, 'movies'));
 
-        legacySnap.docs.forEach((docSnap) => {
-            const key = String(docSnap.id);
-            if (!map.has(key)) {
-                map.set(key, { id: docSnap.id, ...docSnap.data() });
-            }
-        });
+            const map = new Map();
+            primarySnap.docs.forEach((docSnap) => map.set(String(docSnap.id), { id: docSnap.id, ...docSnap.data() }));
+            legacySnap.docs.forEach((docSnap) => {
+                const key = String(docSnap.id);
+                if (!map.has(key)) map.set(key, { id: docSnap.id, ...docSnap.data() });
+            });
 
-        const movies = [...map.values()].sort((a, b) => (millis(b.addedAt) || 0) - (millis(a.addedAt) || 0));
+            movies = [...map.values()].sort((a, b) => (millis(b.addedAt) || 0) - (millis(a.addedAt) || 0));
+        } catch (error) {
+            console.warn('Firestore wishlist read failed, using local fallback:', error);
+            movies = localMovies;
+        }
+
+        if (!movies.length && localMovies.length) {
+            movies = localMovies;
+        }
 
         if (!movies.length) {
             container.innerHTML = `
@@ -127,8 +142,17 @@ document.addEventListener('click', async (event) => {
     if (!confirmed) return;
 
     try {
-        await deleteDoc(doc(db, 'Users', auth.currentUser.uid, 'Wishlist', movieId));
-        await deleteDoc(doc(db, 'wishlist', auth.currentUser.uid, 'movies', movieId));
+        const localKey = `bookmyticket_wishlist_${auth.currentUser.uid}`;
+        const localData = JSON.parse(localStorage.getItem(localKey) || '{}');
+        delete localData[movieId];
+        localStorage.setItem(localKey, JSON.stringify(localData));
+
+        try {
+            await deleteDoc(doc(db, 'Users', auth.currentUser.uid, 'Wishlist', movieId));
+        } catch (error) {
+            console.warn('Firestore delete failed, using local cache only:', error);
+        }
+
         await loadWishlist(auth.currentUser);
     } catch (error) {
         console.error('Failed to remove movie from wishlist:', error);

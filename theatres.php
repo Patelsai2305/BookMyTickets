@@ -74,7 +74,7 @@ include 'includes/header.php';
     }
     .movie-poster { display: none; }
     .detail-back-link { display: inline-block; margin-bottom: 1rem; color: var(--accent); font-weight: 600; text-decoration: none; }
-.theatre-header h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .theatre-header h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
     .theatre-header p { color: var(--text-muted); font-size: 0.85rem; }
     .time-chips { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
     .time-chip { min-width: 90px; padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; font-size: 0.9rem; }
@@ -92,7 +92,7 @@ include 'includes/header.php';
 <main class="container showtimes-page my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 id="page-heading">Available Showtimes for <span class="text-danger"><?= htmlspecialchars($movieTitle) ?></span></h2>
-</div>
+    </div>
 
     <div class="showtime-date-row mb-4">
         <button class="date-choice active" data-date="today">Today</button>
@@ -103,11 +103,13 @@ include 'includes/header.php';
     <div id="location-status" class="showtime-hint mb-3" style="display: none;">
         <span class="spinner-border spinner-border-sm text-danger me-2" role="status"></span>Detecting nearby theatres...
     </div>
+
     <div class="cinema-search-wrap">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input id="cinema-search" type="text" placeholder="Search cinema by name or area, e.g. Rathans, Adajan, VR Mall" />
     </div>
-<div id="theatre-list" class="theatre-list"></div>
+
+    <div id="theatre-list" class="theatre-list"></div>
 </main>
 
 <script type="module">
@@ -230,6 +232,7 @@ function selectedDateValue() {
     if (selectedDate === 'tomorrow') date.setDate(date.getDate() + 1);
     return date.toISOString().slice(0, 10);
 }
+
 function getReleaseDateValue(releaseDate) {
     if (!releaseDate || typeof releaseDate !== 'string') return null;
     const trimmed = releaseDate.trim();
@@ -248,6 +251,7 @@ function isMovieBookingOpen(movie) {
 
     return releaseDate <= dateToCheck;
 }
+
 function isFutureToday(time) {
     if (selectedDate !== 'today') return true;
     const match = time.match(/(\d+):(\d+)\s(AM|PM)/);
@@ -257,6 +261,7 @@ function isFutureToday(time) {
     showTime.setHours(hours, Number(match[2]), 0, 0);
     return showTime.getTime() >= Date.now() - 30 * 60 * 1000;
 }
+
 function openTheatre(theatre) {
     const url = new URL(window.location.href);
     url.searchParams.set('theatreId', theatre.id);
@@ -372,7 +377,8 @@ function renderTheatres() {
         const card = document.createElement('article');
         card.className = 'theatre-card generic-card p-4 mb-3';
         const timingButtons = times.length ? times.map(time => `<button type="button" class="time-chip btn btn-outline-secondary" data-theatre="${theatre.id}" data-name="${theatre.name}" data-time="${time}">${time}</button>`).join('') : '<span class="showtime-hint">No remaining shows today</span>';
-let distanceHtml = '';
+
+        let distanceHtml = '';
         if (theatre.distance !== null) {
             distanceHtml = `<span class="location-badge">${theatre.distance.toFixed(1)} km away</span>`;
         } else {
@@ -427,6 +433,7 @@ cinemaSearch.addEventListener('input', (event) => {
     searchTerm = event.target.value.trim();
     renderTheatres();
 });
+
 document.querySelectorAll('.date-choice').forEach(button => button.addEventListener('click', () => {
     selectedDate = button.dataset.date;
     document.querySelectorAll('.date-choice').forEach(choice => choice.classList.toggle('active', choice === button));
@@ -442,6 +449,7 @@ function useFallback(message) {
 
 renderTheatres();
 loadFirestoreTheatres();
+
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
         userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };

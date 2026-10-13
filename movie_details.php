@@ -22,6 +22,7 @@ $movieVote = $movie['vote_average'] ?? 0;
 $moviePosterPath = $movie['poster_path'] ?? '';
 $movieBackdropPath = $movie['backdrop_path'] ?? '';
 $isUpcomingMovie = !empty($movieReleaseDate) && $movieReleaseDate !== 'N/A' && strtotime($movieReleaseDate) > time();
+
 // Find YouTube trailer if available
 $trailerKey = null;
 if (!empty($movie['videos']['results'])) {
@@ -98,10 +99,11 @@ include 'includes/header.php';
         z-index: 100;
     }
 </style>
+
 <div class="backdrop" id="movie-backdrop">
     <div class="hero-text" style="max-width: 700px;">
         <h1 id="movie-title" style="font-size: 3.2rem; line-height: 1.1; font-weight: 800;"><?= htmlspecialchars($movieTitle) ?></h1>
-<?php if ($movieTagline): ?>
+        <?php if ($movieTagline): ?>
             <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;"><?= htmlspecialchars($movieTagline) ?></p>
         <?php endif; ?>
     </div>
@@ -110,7 +112,8 @@ include 'includes/header.php';
 <div class="movie-detail-container">
     <div style="display: flex; flex-direction: column; gap: 1rem;">
         <img id="movie-poster" src="<?= $tmdb->getImageUrl($moviePosterPath) ?>" class="poster-img" alt="<?= htmlspecialchars($movieTitle) ?>">
-<!-- Wishlist Button -->
+
+        <!-- Wishlist Button -->
         <button id="wishlist-btn" class="btn btn-secondary" style="width: 100%;">
             <i class="fa-regular fa-heart" id="wishlist-icon"></i> <span id="wishlist-text">Add to Wishlist</span>
         </button>
@@ -131,7 +134,8 @@ include 'includes/header.php';
 
         <h2 style="margin-bottom: 0.5rem;">Synopsis</h2>
         <p id="movie-overview" style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.8;"><?= htmlspecialchars($movieOverview) ?></p>
-<h3 style="margin-bottom: 1rem;">Top Cast</h3>
+
+        <h3 style="margin-bottom: 1rem;">Top Cast</h3>
         <div class="cast-scroll">
             <?php foreach (array_slice($movie['credits']['cast'] ?? [], 0, 10) as $cast): ?>
                 <div class="cast-card">
@@ -176,7 +180,8 @@ include 'includes/header.php';
     import { auth, db, doc, getDoc, setDoc, deleteDoc, onAuthStateChanged, serverTimestamp } from './assets/js/firebase-config.js';
     import { getHybridImageUrl } from './assets/js/image-utils.js';
     import { normalizeMovie } from './assets/js/movie-model.js';
-const movieId = "<?= $movieId ?>";
+
+    const movieId = "<?= $movieId ?>";
     const movieTitle = <?= json_encode($movieTitle) ?>;
     const posterPath = <?= json_encode($moviePosterPath) ?>;
     const movieBackdropPath = <?= json_encode($movieBackdropPath) ?>;
@@ -226,42 +231,24 @@ const movieId = "<?= $movieId ?>";
             }
         })();
     }
-// Wishlist Logic
+
+    // Wishlist Logic
     const wishlistBtn = document.getElementById('wishlist-btn');
     const wishlistIcon = document.getElementById('wishlist-icon');
     const wishlistText = document.getElementById('wishlist-text');
     let currentUser = null;
     let isWishlisted = false;
 
-    function getWishlistDocPath(uid, legacy = false) {
-        if (legacy) {
-            return doc(db, 'wishlist', uid, 'movies', String(movieId));
-        }
-        return doc(db, 'Users', uid, 'Wishlist', String(movieId));
-    }
-
-    async function syncWishlistState(user) {
-        if (!user) {
-            isWishlisted = false;
-            updateWishlistUI();
-            return;
-        }
-
-        const primaryDoc = await getDoc(getWishlistDocPath(user.uid));
-        if (primaryDoc.exists()) {
-            isWishlisted = true;
-            updateWishlistUI();
-            return;
-        }
-
-        const legacyDoc = await getDoc(getWishlistDocPath(user.uid, true));
-        isWishlisted = legacyDoc.exists();
-        updateWishlistUI();
-    }
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        syncWishlistState(user);
+        if (user) {
+            const wishRef = doc(db, `wishlist/${user.uid}/movies/${movieId}`);
+            const wishDoc = await getDoc(wishRef);
+            if (wishDoc.exists()) {
+                isWishlisted = true;
+                updateWishlistUI();
+            }
+        }
     });
 
     wishlistBtn.onclick = async () => {
@@ -271,35 +258,23 @@ const movieId = "<?= $movieId ?>";
             return;
         }
 
+        const wishRef = doc(db, `wishlist/${currentUser.uid}/movies/${movieId}`);
         try {
-            const payload = {
-                id: String(movieId),
-                movieId: String(movieId),
-                tmdbId: isTmdbMovie ? Number(movieId) || 0 : 0,
-                title: movieTitle,
-                name: movieTitle,
-                posterUrl: posterPath || '',
-                posterPath: posterPath || '',
-                bannerUrl: movieBackdropPath || '',
-                description: document.getElementById('movie-overview')?.textContent || movieTitle,
-                rating: Number(document.querySelector('.booking-bar span')?.textContent?.match(/([0-9]+\.?[0-9]*)\s*\/\s*10/)?.[1] || 0),
-                releaseDate: document.querySelector('.booking-bar span:last-of-type')?.textContent?.trim() || '',
-                addedAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            };
-
             if (isWishlisted) {
-                await deleteDoc(getWishlistDocPath(currentUser.uid));
+                await deleteDoc(wishRef);
                 isWishlisted = false;
             } else {
-                await setDoc(getWishlistDocPath(currentUser.uid), payload);
+                await setDoc(wishRef, {
+                    movieId: movieId,
+                    title: movieTitle,
+                    posterPath: posterPath,
+                    addedAt: serverTimestamp()
+                });
                 isWishlisted = true;
             }
-
             updateWishlistUI();
         } catch (err) {
             console.error("Wishlist error:", err);
-            alert("Could not update your wishlist. Please try again.");
         }
     };
 
