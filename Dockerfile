@@ -2,7 +2,12 @@ FROM php:8.2-apache
 
 RUN a2enmod rewrite
 
-RUN docker-php-ext-install curl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev \
+    pkg-config \
+    && docker-php-ext-install curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
