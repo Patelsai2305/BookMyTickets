@@ -2,12 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-<<<<<<< HEAD
     function signedIn() {
       return request.auth != null;
     }
 
-    // Robust Admin check: Handles missing docs and ensures data integrity
     function isAdmin() {
       return signedIn() &&
         exists(/databases/$(database)/documents/Users/$(request.auth.uid)) &&
@@ -19,16 +17,14 @@ service cloud.firestore {
     }
 
     match /Users/{userId} {
-      // Strict creation logic from your old rules to prevent privilege escalation
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.role == 'user'
+        && request.resource.data.get('role', 'user') == 'user'
         && request.resource.data.get('isAdmin', false) == false;
 
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
 
-      // Only allow updating own profile, and restrict sensitive fields
       allow update: if isAdmin() || (
         signedIn()
         && request.auth.uid == userId
@@ -37,133 +33,63 @@ service cloud.firestore {
 
       allow delete: if isAdmin();
 
-=======
-    function signedIn() { return request.auth != null; }
-
-    function isAdmin() {
-      return signedIn()
-        && exists(/databases/$(database)/documents/Users/$(request.auth.uid))
-        && (
-          get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('role', 'user') == 'admin'
-          || get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('isAdmin', false) == true
-          || get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.get('isAdmin', 'false') == 'true'
-        );
-    }
-
-    function owns(data) {
-      return signedIn() && (
-        data.get('userId', '') == request.auth.uid
-        || data.get('uid', '') == request.auth.uid
-        || data.get('userEmail', '') == request.auth.token.email
-      );
-    }
-
-    // ---------------- Users ----------------
-    match /Users/{userId} {
-      allow create: if signedIn()
-        && request.auth.uid == userId
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.get('role', 'user') == 'user'
-        && request.resource.data.get('isAdmin', false) == false;
-      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
-      allow update: if isAdmin() || (
-        signedIn() && request.auth.uid == userId
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid','role','isAdmin'])
-      );
-      allow delete: if isAdmin();
->>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
       match /Wishlist/{movieId} {
         allow read, write: if signedIn() && request.auth.uid == userId;
       }
     }
 
-<<<<<<< HEAD
-    // Rules for Movies collection
     match /Movies/{movieId} {
-      allow read: if signedIn();
-      allow write: if isAdmin();
-    }
-    match /movies/{movieId} {
-      allow read: if signedIn();
+      allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Legacy collections (Backwards compatibility)
-    match /Bookings/{bookingId} {
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read: if signedIn();
-      allow update, delete: if isAdmin();
+    match /movies/{movieId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /theatres/{theatreId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /Theatres/{theatreId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /cinemas/{cinemaId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /shows/{showId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /Shows/{showId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /showtimes/{showtimeId} {
-      allow read, write: if signedIn();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    // Rules for Screenings (Shared with Web for atomic seat locking)
+    match /Showtimes/{showtimeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /screenings/{screeningId} {
-      allow read: if true; // Public read for seat maps
-      allow create, update: if signedIn(); // Required for atomic transaction locking
-      allow delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    // Seat Locking Collection (Shared with Web)
-    match /seatLocks/{lockId} {
-      // Everyone can read locks to see taken seats
-      allow read: if signedIn();
-
-      // Allow users to lock/unlock seats they own.
-      // Status 'booked' is permanent, 'locked' is temporary.
-      allow write: if isAdmin() || (
-        signedIn() && (
-          (request.resource == null && resource.data.userId == request.auth.uid) || // Delete own lock
-          (request.resource != null && request.resource.data.userId == request.auth.uid) // Create/Update own lock
-        )
-      );
-    }
-
-    // Unified Collection for App & Web Bookings
-    match /bookingticket_app_web/{bookingId} {
-      // Must be able to read others' bookings to aggregate taken seats in the layout grid
-      allow read: if signedIn();
-
-      // Any signed-in user can create a booking document
-      allow create: if signedIn();
-
-      // Users can update their own booking status (e.g. to CANCELLED), Admins can update any
-      allow update: if signedIn() && (
-        isAdmin() ||
-        resource.data.get('userId', '') == request.auth.uid ||
-        resource.data.get('uid', '') == request.auth.uid ||
-        resource.data.get('userEmail', '') == request.auth.token.email
-      );
-
-      allow delete: if isAdmin();
-    }
-=======
-    match /users/{userId} {
-      allow create, read, update: if signedIn() && (request.auth.uid == userId || isAdmin());
-      allow delete: if isAdmin();
-    }
-
-    // ---------------- Public catalogue / admin management ----------------
-    match /Movies/{movieId} { allow read: if true; allow write: if isAdmin(); }
-    match /movies/{movieId} { allow read: if true; allow write: if isAdmin(); }
-    match /theatres/{theatreId} { allow read: if true; allow write: if isAdmin(); }
-    match /Theatres/{theatreId} { allow read: if true; allow write: if isAdmin(); }
-    match /cinemas/{cinemaId} { allow read: if true; allow write: if isAdmin(); }
-    match /shows/{showId} { allow read: if true; allow write: if isAdmin(); }
-    match /Shows/{showId} { allow read: if true; allow write: if isAdmin(); }
-    match /showtimes/{showtimeId} { allow read: if true; allow write: if isAdmin(); }
-    match /Showtimes/{showtimeId} { allow read: if true; allow write: if isAdmin(); }
-    match /screenings/{screeningId} { allow read: if true; allow write: if isAdmin(); }
-
-    // ---------------- Shared seat locks ----------------
-    // Canonical lifecycle: locked -> booked -> cancelled -> locked.
     match /seatLocks/{lockId} {
       allow read: if signedIn();
-
-      // Normal users may create only their own temporary lock.
-      // Admin may create any lock when repairing/managing data.
       allow create: if isAdmin() || (
         signedIn()
         && request.resource.data.get('userId', '') == request.auth.uid
@@ -173,7 +99,6 @@ service cloud.firestore {
       allow update: if isAdmin() || (
         signedIn()
         && (
-          // Own temporary lock -> booked during successful payment.
           (
             resource.data.get('userId', '') == request.auth.uid
             && resource.data.get('status', '') == 'locked'
@@ -181,7 +106,6 @@ service cloud.firestore {
             && request.resource.data.get('userId', '') == request.auth.uid
           )
           ||
-          // Own temporary lock refresh.
           (
             resource.data.get('userId', '') == request.auth.uid
             && resource.data.get('status', '') == 'locked'
@@ -189,7 +113,6 @@ service cloud.firestore {
             && request.resource.data.get('userId', '') == request.auth.uid
           )
           ||
-          // Own booked seat -> cancelled.
           (
             resource.data.get('userId', '') == request.auth.uid
             && resource.data.get('status', '') == 'booked'
@@ -198,7 +121,6 @@ service cloud.firestore {
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','cancelledAt','cancellationReason'])
           )
           ||
-          // A cancelled seat is reusable by a new user.
           (
             resource.data.get('status', '') == 'cancelled'
             && request.resource.data.get('status', '') == 'locked'
@@ -207,8 +129,6 @@ service cloud.firestore {
         )
       );
 
-      // Users may abandon only temporary locks. Cancellation uses update,
-      // so a booked seat cannot be silently deleted by the client.
       allow delete: if isAdmin() || (
         signedIn()
         && resource.data.get('userId', '') == request.auth.uid
@@ -216,8 +136,23 @@ service cloud.firestore {
       );
     }
 
-    // ---------------- Unified Web + Android bookings ----------------
     match /bookingticket_app_web/{bookingId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn() && (
+        isAdmin() ||
+        resource.data.get('userId', '') == request.auth.uid ||
+        resource.data.get('uid', '') == request.auth.uid ||
+        resource.data.get('userEmail', '') == request.auth.token.email
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /wishlist/{userId}/movies/{movieId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+  }
+}
       allow read: if isAdmin() || owns(resource.data);
 
       allow create: if signedIn()
@@ -273,6 +208,5 @@ service cloud.firestore {
     }
 
     match /{document=**} { allow read, write: if false; }
->>>>>>> 0e1e9cc6a83a338a3355514328ca1f09d8fcc2cb
   }
 }

@@ -290,11 +290,9 @@ const movieId = "<?= $movieId ?>";
 
             if (isWishlisted) {
                 await deleteDoc(getWishlistDocPath(currentUser.uid));
-                await deleteDoc(getWishlistDocPath(currentUser.uid, true));
                 isWishlisted = false;
             } else {
                 await setDoc(getWishlistDocPath(currentUser.uid), payload);
-                await setDoc(getWishlistDocPath(currentUser.uid, true), payload);
                 isWishlisted = true;
             }
 
